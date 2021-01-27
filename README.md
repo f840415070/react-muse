@@ -1,17 +1,18 @@
-## Initialize a React App
+## Create a React App
 
 ### Quick start
 
 ```
-npm i ira-cli -g
-ira-cli init
-cd myapp
+npm i react-muse -g
+react-muse init
+[ make some choices ]
+cd my-project-name
 npm/yarn start
 ```
 
 You also can use more **command-line parameters** to create React App
 ```
-ira-cli init myapp --template typescript --yarn
+react-muse init my-project-name --template typescript --yarn
 ```
 
 ### Usage
@@ -19,6 +20,7 @@ ira-cli init myapp --template typescript --yarn
 Options:
   --template <template>  add javascript or typescript template, can be js, javascript, ts, typescript
   --yarn                 use yarn to install packages, default npm
+  --eslint               use ESLint
   -h, --help             display help for command
 
 Commands:
