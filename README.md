@@ -24,6 +24,6 @@ Options:
   -h, --help             display help for command
 
 Commands:
-  init [name]            initialize a React App
+  init [name]            start to initialize a project
   help [command]         display help for command
 ```
