@@ -15,14 +15,13 @@ function init() {
 function setCommands() {
   CMD
     .command('init [name]')
-    .description('initialize a React App')
+    .description('start to initialize a project')
     .action((name) => {
-      initStart();
       const opts = parseOpts({ name });
       inquirer
         .prompt(setQuestions(opts))
         .then((answers) => {
-          const results = Object.assign(opts, answers);
+          const results = { ...opts, ...answers };
           results.root = path.resolve(results.name); // project root path
           checkAppName(results.name);
           run(results);
@@ -35,8 +34,8 @@ function setCommands() {
     .option('--eslint', 'use ESLint');
 }
 
-function parseOpts(cmdOpts) {
-  const result = Object.assign(CMD.opts(), cmdOpts);
+function parseOpts({ name }) {
+  const result = { ...CMD.opts(), name };
   if (result.template) {
     const tmpl = result.template.toLowerCase();
     if (tmpl === 'js' || tmpl === 'javascript') {
@@ -48,60 +47,70 @@ function parseOpts(cmdOpts) {
   return result;
 }
 
-function run(data) {
+function run({
+  template, name, eslint, root, yarn,
+}) {
   console.log(chalk.bgBlue('\nCreating project directory...'));
-  createFolder(data.root);
+  createFolder(root);
 
   console.log(chalk.bgBlue('\nCreating templates...'));
-  createTemplates(data);
+  createTemplates({
+    template, name, eslint, root,
+  });
 
   console.log(chalk.bgBlue('\nInstalling dependencies...'));
-  install(data);
+  install({ yarn, name, root });
 }
 
-function createTemplates(data) {
-  createPackageJson(data);
+function createTemplates({
+  template, name, eslint, root,
+}) {
+  createPackageJson({
+    template, name, eslint, root,
+  });
   Array.prototype.forEach.call([
     templatePath('public'),
-    templatePath(data.template),
-  ], (src) => readDirToCopyAll(src, data.root));
-  if (data.eslint) {
+    templatePath(template),
+  ], (src) => readDirToCopyAll(src, root));
+  if (eslint) {
     const eslintrcJson = parseJson(templatePath('eslintrc.json'));
     createFile(
-      path.join(data.root, '.eslintrc.json'),
-      JSON.stringify(eslintrcJson[data.template], null, 2),
+      path.join(root, '.eslintrc.json'),
+      JSON.stringify(eslintrcJson[template], null, 2),
     );
   }
 }
 
-function install(data) {
-  const executor = which.sync(data.yarn ? 'yarn' : 'npm');
+function install({ yarn, name, root }) {
+  const executor = which.sync(yarn ? 'yarn' : 'npm');
   if (!executor) {
     console.error(chalk.red(
-      `\nCan not find ${chalk.bgGreen(data.yarn ? 'yarn' : 'npm')} !Please confirm the installation.`,
+      `\nCan not find ${chalk.bgGreen(yarn ? 'yarn' : 'npm')} !Please confirm the installation.`,
     ));
     process.exit(1);
   }
-  const installer = spawn(executor, ['install'], { stdio: 'inherit', cwd: data.root });
-  installer.on('close', () => initEnd(data));
+  const installer = spawn(executor, ['install'], { stdio: 'inherit', cwd: root });
+  installer.on('close', () => done({ yarn, name }));
 }
 
 function parseJson(pathname) {
   return JSON.parse(fs.readFileSync(pathname));
 }
 
-function createPackageJson(data) {
+function createPackageJson({
+  template, name, eslint, root,
+}) {
   const defaultJson = parseJson(templatePath('package.json'));
   const dependencyJson = parseJson(templatePath('dependency.json'));
   const packageJson = deepAssign(
     defaultJson,
-    dependencyJson[data.template],
-    data.eslint ? dependencyJson[`eslint-${data.template}`] : {},
+    dependencyJson[template],
+    eslint ? dependencyJson[`eslint-${template}`] : {},
   );
-  packageJson.name = data.name;
+  packageJson.name = name;
 
   createFile(
-    path.join(data.root, 'package.json'),
+    path.join(root, 'package.json'),
     JSON.stringify(packageJson, null, 2),
   );
 }
@@ -163,7 +172,7 @@ function isDirectory(pathname) {
 }
 
 function templatePath(...p) {
-  return path.join(path.resolve(__dirname, '../templates'), ...p);
+  return path.join(path.resolve(__dirname, '../template'), ...p);
 }
 
 function checkAppName(appName) {
@@ -216,22 +225,10 @@ function setQuestions(opts) {
   ];
 }
 
-function initStart() {
-  console.log(chalk.blue(`
-  #####################################
-  #                                   #
-  #        Welcome to ira-cli!        #
-  #                                   #
-  #             For React             #
-  #                                   #
-  #####################################
-`));
-}
-
-function initEnd(data) {
-  console.log(chalk.greenBright('\nInitialized successfully!You can run:'));
-  console.log('  1.', chalk.whiteBright(`cd ${data.name}`));
-  console.log('  2.', chalk.whiteBright(`${data.yarn ? 'yarn' : 'npm'} start`));
+function done({ yarn, name }) {
+  console.log(chalk.greenBright('\nCreated successfully!You can run:'));
+  console.log('  1.', chalk.whiteBright(`cd ${name}`));
+  console.log('  2.', chalk.whiteBright(`${yarn ? 'yarn' : 'npm'} start\n`));
 }
 
 module.exports = {
