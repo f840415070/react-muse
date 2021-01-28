@@ -21,6 +21,7 @@ Options:
   --template <template>  add javascript or typescript template, can be js, javascript, ts, typescript
   --yarn                 use yarn to install packages, default npm
   --eslint               use ESLint
+  --router               use react-router-dom
   -h, --help             display help for command
 
 Commands:
