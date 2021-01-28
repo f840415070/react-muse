@@ -17,30 +17,31 @@ function setCommands() {
     .command('init [name]')
     .description('start to initialize a project')
     .action((name) => {
-      const opts = parseOpts({ name });
+      const commandOpts = parseCommandOpts({ name });
       inquirer
-        .prompt(setQuestions(opts))
+        .prompt(setQuestions(commandOpts))
         .then((answers) => {
-          const results = { ...opts, ...answers };
-          results.root = path.resolve(results.name); // project root path
-          checkAppName(results.name);
-          run(results);
+          const initialOpts = { ...commandOpts, ...answers };
+          initialOpts.root = path.resolve(initialOpts.name); // project root path
+          checkAppName(initialOpts.name);
+          run(initialOpts);
         });
     });
 
   CMD
     .option('--template <template>', 'use JavaScript or TypeScript template, can be js, javascript, ts, typescript')
     .option('--yarn', 'use yarn to install packages, default npm')
-    .option('--eslint', 'use ESLint');
+    .option('--eslint', 'use ESLint')
+    .option('--router', 'use react-router-dom');
 }
 
-function parseOpts({ name }) {
+function parseCommandOpts({ name }) {
   const result = { ...CMD.opts(), name };
   if (result.template) {
-    const tmpl = result.template.toLowerCase();
-    if (tmpl === 'js' || tmpl === 'javascript') {
+    const templateStr = result.template.toLowerCase();
+    if (templateStr === 'js' || templateStr === 'javascript') {
       result.template = 'javascript';
-    } else if (tmpl === 'ts' || tmpl === 'typescript') {
+    } else if (templateStr === 'ts' || templateStr === 'typescript') {
       result.template = 'typescript';
     }
   }
@@ -48,14 +49,14 @@ function parseOpts({ name }) {
 }
 
 function run({
-  template, name, eslint, root, yarn,
+  template, name, eslint, root, yarn, router,
 }) {
   console.log(chalk.bgBlue('\nCreating project directory...'));
   createFolder(root);
 
   console.log(chalk.bgBlue('\nCreating templates...'));
   createTemplates({
-    template, name, eslint, root,
+    template, name, eslint, root, router,
   });
 
   console.log(chalk.bgBlue('\nInstalling dependencies...'));
@@ -63,10 +64,10 @@ function run({
 }
 
 function createTemplates({
-  template, name, eslint, root,
+  template, name, eslint, root, router,
 }) {
   createPackageJson({
-    template, name, eslint, root,
+    template, name, eslint, root, router,
   });
   Array.prototype.forEach.call([
     templatePath('public'),
@@ -98,7 +99,7 @@ function parseJson(pathname) {
 }
 
 function createPackageJson({
-  template, name, eslint, root,
+  template, name, eslint, root, router,
 }) {
   const defaultJson = parseJson(templatePath('package.json'));
   const dependencyJson = parseJson(templatePath('dependency.json'));
@@ -106,6 +107,7 @@ function createPackageJson({
     defaultJson,
     dependencyJson[template],
     eslint ? dependencyJson[`eslint-${template}`] : {},
+    router ? dependencyJson[`router-${template}`] : {},
   );
   packageJson.name = name;
 
