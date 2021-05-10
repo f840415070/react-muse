@@ -1,0 +1,9 @@
+{
+  "name": "react-app",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "start": "webpack serve --open --mode development",
+    "build": "webpack --mode production"
+  }
+}

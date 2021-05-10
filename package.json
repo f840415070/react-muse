@@ -1,0 +1,38 @@
+{
+  "name": "react-muse",
+  "version": "1.0.0",
+  "description": "A cli to create a simple react project",
+  "main": "index.js",
+  "bin": {
+    "react": "./bin/react.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "react-cli",
+    "create-react-app"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/f840415070/react-muse.git"
+  },
+  "homepage": "https://github.com/f840415070/react-muse#readme",
+  "author": "fanyibin",
+  "license": "MIT",
+  "files": [
+    "bin/",
+    "src/"
+  ],
+  "dependencies": {
+    "chalk": "^4.1.0",
+    "commander": "^5.1.0",
+    "validate-npm-package-name": "^3.0.0",
+    "which": "^2.0.2"
+  },
+  "devDependencies": {
+    "eslint": "^7.26.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.22.1"
+  }
+}
