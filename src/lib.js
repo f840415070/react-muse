@@ -5,7 +5,7 @@ const validateProjectName = require('validate-npm-package-name');
 
 const logger = {
   info(text) {
-    console.log(`${chalk.blue('info')} ${text}`);
+    console.log(`${chalk.blueBright('info')} ${text}`);
   },
   error(text) {
     console.log(`${chalk.red('error')} ${text}`);
