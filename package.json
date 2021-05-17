@@ -1,6 +1,6 @@
 {
   "name": "react-muse",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "A cli to create react app",
   "main": "index.js",
   "bin": {
