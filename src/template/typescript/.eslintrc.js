@@ -31,8 +31,6 @@ module.exports = {
     'one-var': 'off',
     // @warn 无用变量警告
     'no-unused-vars': ['warn', { vars: 'all', args: 'none' }],
-    // @error 变量必须先定义后使用
-    'no-use-before-define': ['error', { functions: false, classes: false, variables: false }],
     // 在类的非静态方法中，必须存在对 this 的引用
     // @off 太严格了
     'class-methods-use-this': 'off',
